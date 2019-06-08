@@ -5,6 +5,7 @@ import os
 
 import pandas as pd
 from PIL import Image, ImageDraw
+import PIL
 from flask import Flask, request
 
 app = Flask(__name__)
@@ -70,6 +71,7 @@ def data_collector():
         vertices.append((int(node_east), int(node_north)))
     draw = ImageDraw.Draw(segmented_image)
     draw.polygon(vertices, (255, 255, 255), (255, 255, 255))
+    segmented_image = segmented_image.transpose(PIL.Image.FLIP_TOP_BOTTOM)
     if not os.path.isdir(segmented_image_dir):
         os.makedirs(segmented_image_dir)
     segmented_image.save(os.path.join(segmented_image_dir, img_filename+'_segmented.png'), 'png')
