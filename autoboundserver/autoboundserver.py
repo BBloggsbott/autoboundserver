@@ -8,19 +8,38 @@ from PIL import Image, ImageDraw
 import PIL
 from flask import Flask, request
 
+from .image_processing import get_image_tensor, pil_to_cv, get_approx
+from .model_utils import get_model_from_file, predict_segmented_image, BuildingSegmenterNet
+from .data_processing import unsqueeze_approx, offset_approx, generate_osm_xml
+
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config.update({"data_dir":"autoboundData", "data_csv": "data.csv", "original_image_dir": "originalImages",
-                   "segmented_image_dir": "segmentedImages"})
+                   "segmented_image_dir": "segmentedImages", "id":-1})
 
 
 def file_exists(filename):
     return os.path.isfile(filename)
 
+def save_to_file(text):
+    f = open('dummy.txt', 'w+')
+    f.write(text)
+    f.close()
 
 @app.route('/', methods=['GET', 'POST'])
 def foo():
-    return "Lorem Ipsum"
+    data = json.loads(request.data)
+    image_bytes = base64.b64decode(data['image'])
+    image = get_image_tensor(io.BytesIO(image_bytes))
+    model = get_model_from_file(filename=os.path.join(app.root_path, 'models', 'autoboundModel.pth'))
+    segmented_image = predict_segmented_image(model, image)
+    segmented_image = pil_to_cv(segmented_image)
+    approx = get_approx(segmented_image)
+    approx = unsqueeze_approx(approx)
+    approx = offset_approx(approx, float(data['min_east']), float(data['min_north']))
+    osm_xml, id = generate_osm_xml(approx, app.config['id'])
+    app.config.update({"id":id})
+    return osm_xml
 
 
 @app.route('/generateNodesTest', methods=['GET', 'POST'])

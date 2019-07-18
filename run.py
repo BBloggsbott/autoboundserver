@@ -1,4 +1,4 @@
-from autoboundserver import app
+from autoboundserver import app, BuildingSegmenterNet
 import os
 
 if __name__ == '__main__':

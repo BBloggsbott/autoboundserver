@@ -2,12 +2,12 @@ import cv2
 import numpy as np
 from fastai.vision import open_image, get_transforms
 
-def get_approxes(cv_img):
+def get_approx(cv_img):
     img2gray = cv2.cvtColor(cv_img,cv2.COLOR_BGR2GRAY)
     kernel = np.ones((5,5),np.float32)/25
     img2gray = cv2.filter2D(img2gray,-1,kernel)
     _,thresh = cv2.threshold(img2gray,250,255,cv2.THRESH_BINARY_INV)
-    _,contours,_ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    contours,_ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     cnt = contours[0]
     max_area = cv2.contourArea(cnt)
     for cont in contours:

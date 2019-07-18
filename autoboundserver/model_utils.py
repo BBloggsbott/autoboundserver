@@ -1,8 +1,9 @@
 from torch import nn
 from torchvision import models
 import torch
-from fastai.imports import DatasetType
+from fastai.basic_data import DatasetType
 import numpy as np
+import os
 
 class BuildingSegmenterNet(nn.Module):
     def __init__(self):
@@ -51,9 +52,9 @@ def train_model(data, model, optimizer, loss, epochs):
     valid_loss = validation_loss(model, data, loss)
     print("\tAverage Training Loss: {}\n\tAverage Validation Loss: {}".format(avg_train_loss, valid_loss))
 
-def get_model_from_file(pretrained=True, filename='autoboundModel.pth'):
+def get_model_from_file(pretrained=True, filename=os.path.join('models', 'autoboundModel.pth')):
     if pretrained:
-        model = torch.load('autoboundModel.pth')
+        model = torch.load(filename)
     else:
         model = BuildingSegmenterNet()
     return model
