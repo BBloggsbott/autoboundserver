@@ -16,15 +16,22 @@ def get_time_stamp():
 def generate_osm_xml(points, id):
     timestamp=get_time_stamp()
     head = '''<?xml version="1.0" encoding="UTF-8"?>
-            <osm version="0.6" generator="JOSM">
-                <way id="{0}" visible="true" >'''.format(id)
+            <osm version="0.6" generator="JOSM">'''
+    way_head = '''<way id="{0}" visible="true" >'''.format(id)
     tail='<tag k="building" v="yes" /></way></osm>'
     ways_xml = ""
+    nodes_xml = ""
     id-=1
+    first_id = id
     for i in points:
-        ways_xml+='''<node id="{0}" east="{1} north="{2}" />'''.format(id, i[0], i[1])
+        nodes_xml+='''<node id="{0}" east="{1}" north="{2}" />\n'''.format(id, i[0], i[1])
+        ways_xml += '''<nd ref="{}" />\n'''.format(id)
         id-=1
-    osm_xml = head+ways_xml+tail
+    ways_xml += '''<nd ref="{}" />\n'''.format(first_id)
+    osm_xml = head+nodes_xml+way_head+ways_xml+tail
+    f = open('temp_xml.xml', 'w+')
+    f.write(osm_xml)
+    f.close()
     return osm_xml, id
 
 def invert_approx(approx):
