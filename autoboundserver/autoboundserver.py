@@ -10,7 +10,7 @@ from flask import Flask, request
 
 from .image_processing import get_image_tensor, pil_to_cv, get_approx
 from .model_utils import get_model_from_file, predict_segmented_image, BuildingSegmenterNet
-from .data_processing import unsqueeze_approx, offset_approx, generate_osm_xml
+from .data_processing import unsqueeze_approx, offset_approx, generate_osm_xml, fit_approx_to_ratio
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -27,16 +27,22 @@ def save_to_file(text):
     f.close()
 
 @app.route('/', methods=['GET', 'POST'])
-def foo():
+def generate_nodes():
     data = json.loads(request.data)
     image_bytes = base64.b64decode(data['image'])
-    image = get_image_tensor(io.BytesIO(image_bytes))
+    image, image_tensor = get_image_tensor(io.BytesIO(image_bytes))
+    #calculate Lat Lon to image ratios
+    lat_ratio = (float(data['max_lat']) - float(data['min_lat'])) / image.size[0]
+    lon_ratio = (float(data['max_lon']) - float(data['min_lon'])) / image.size[1]
+    #Generate segmented image
     model = get_model_from_file(filename=os.path.join(app.root_path, 'models', 'autoboundModel.pth'))
-    segmented_image = predict_segmented_image(model, image)
+    segmented_image = predict_segmented_image(model, image_tensor)
     segmented_image = pil_to_cv(segmented_image)
+    #Get points for nodes
     approx = get_approx(segmented_image)
     approx = unsqueeze_approx(approx)
-    approx = offset_approx(approx, float(data['min_east']), float(data['min_north']))
+    approx = fit_approx_to_ratio(approx, lat_ratio, lon_ratio)
+    approx = offset_approx(approx, float(data['min_lat']), float(data['min_lon']))
     osm_xml, id = generate_osm_xml(approx, app.config['id'])
     app.config.update({"id":id})
     return osm_xml

@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from fastai.vision import open_image, get_transforms
+from PIL import Image
 
 def get_approx(cv_img):
     img2gray = cv2.cvtColor(cv_img,cv2.COLOR_BGR2GRAY)
@@ -20,10 +21,11 @@ def get_approx(cv_img):
     return approx
 
 def get_image_tensor(decoded_image_bytes):
-    image = open_image(decoded_image_bytes)
-    image = image.apply_tfms(get_transforms()[0], size = 256)
-    image = image.data.unsqueeze(dim=0)
-    return image
+    image_tensor = open_image(decoded_image_bytes)
+    image_tensor = image_tensor.apply_tfms(get_transforms()[0], size = 256)
+    image_tensor = image_tensor.data.unsqueeze(dim=0)
+    image = Image.open(decoded_image_bytes)
+    return image, image_tensor
 
 def pil_to_cv(pil_img):
     cv_image = np.array(pil_img)

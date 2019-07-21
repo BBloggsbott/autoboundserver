@@ -5,7 +5,6 @@ import math
 def get_time_stamp():
     time_zone = time.timezone/3600
     frac, whole = math.modf(time_zone)
-    print(frac, whole)
     if whole<0:
         time_zone = "+{}:{}".format(int(-whole), int(-frac*60))
     else:
@@ -24,7 +23,7 @@ def generate_osm_xml(points, id):
     id-=1
     first_id = id
     for i in points:
-        nodes_xml+='''<node id="{0}" east="{1}" north="{2}" />\n'''.format(id, i[0], i[1])
+        nodes_xml+='''<node id="{0}" lat="{1}" lon="{2}" />\n'''.format(id, i[0], i[1])
         ways_xml += '''<nd ref="{}" />\n'''.format(id)
         id-=1
     ways_xml += '''<nd ref="{}" />\n'''.format(first_id)
@@ -45,3 +44,7 @@ def unsqueeze_approx(approx):
 def offset_approx(unsqueezed_approx, x, y):
     offset_aprx = [(i[0]+x, i[1]+y) for i in unsqueezed_approx]
     return offset_aprx
+
+def fit_approx_to_ratio(approx, lat_ratio, lon_ratio):
+    approx = [(i*lat_ratio, j*lon_ratio) for i, j in approx]
+    return approx
