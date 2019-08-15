@@ -1,4 +1,9 @@
 # autoboundserver
-Currenty updated in the [development](https://github.com/BBloggsbott/autoboundserver/tree/development) branch.<br/>
-Server for [AutoBound](https://github.com/BBloggsbott/autobound)
+Server for [AutoBound](https://github.com/BBloggsbott/autobound)<br/>
 
+Currently implemented End points:
+
+* `/generateNodesTest` - Used by the unit test for the JOSM plugin
+* `/dataCollector` - Used to collect data (original image, segmented image and other metadata) of buildings using the `Collect Data - AutoBound` oprtion under the `Tools` menu in JOSM. 
+=======
+Server for [AutoBound](https://github.com/BBloggsbott/autobound)
