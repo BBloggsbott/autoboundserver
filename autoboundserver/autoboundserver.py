@@ -19,15 +19,16 @@ app.config.update({"data_dir":"autoboundData", "data_csv": "data.csv", "original
 
 
 def file_exists(filename):
+    """
+    Checks if a file exists
+    """
     return os.path.isfile(filename)
-
-def save_to_file(text):
-    f = open('dummy.txt', 'w+')
-    f.write(text)
-    f.close()
 
 @app.route('/', methods=['GET', 'POST'])
 def generate_nodes():
+    """
+    Generates nodes using data recieved
+    """
     data = json.loads(request.data)
     image_bytes = base64.b64decode(data['image'])
     image, image_tensor = get_image_tensor(io.BytesIO(image_bytes))
@@ -50,6 +51,9 @@ def generate_nodes():
 
 @app.route('/generateNodesTest', methods=['GET', 'POST'])
 def generate_nodes_test():
+    """
+    Used by the NetworkUtils test of AutoBound
+    """
     data = json.loads(request.data)
     if data['verification'] == "generateNodesTest":
         return "message exchange works"
@@ -58,6 +62,9 @@ def generate_nodes_test():
 
 @app.route('/dataCollector', methods=['GET', 'POST'])
 def data_collector():
+    """
+    Method that provides data collection functionality for AutoBound. It saves the passed image and generates the segmented image.
+    """
     data = json.loads(request.data)
     data_dir = app.config['data_dir']
     original_image_dir = os.path.join(data_dir, app.config['original_image_dir'])

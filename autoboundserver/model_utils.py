@@ -8,49 +8,47 @@ import os
 class BuildingSegmenterNet(nn.Module):
     def __init__(self):
         super(BuildingSegmenterNet, self).__init__()
-        self.fcn = models.segmentation.fcn_resnet101(pretrained=False).train()
-        self.out_layer = nn.Conv2d(21, 2, kernel_size=(1,1), stride=(1,1))
-
+        self.seq1 = nn.Sequential(
+            nn.Conv2d(3, 16, (5,5)),
+            nn.MaxPool2d((2,2))
+        )
+        self.seq2 = nn.Sequential(
+            nn.Linear((126*126*16), 512),
+            nn.ReLU()
+        )
+        self.dropout1 = nn.Dropout(0.33)
+        self.seq3 = nn.Sequential(
+            nn.Linear(512, 128),
+            nn.ReLU()
+        )
+        self.seq4 = nn.Sequential(
+            nn.Linear(128, 128),
+            nn.ReLU()
+        )
+        self.seq5 = nn.Sequential(
+            nn.Linear(128, 512),
+            nn.ReLU()
+        )
+        self.seq6 = nn.Sequential(
+            nn.Linear(512, 256*256),
+            nn.ReLU()
+        )
+        self.seq7 = nn.Sequential(
+            nn.Conv2d(1, 1, (3,3), padding = 1),
+            nn.Sigmoid()
+        )
     def forward(self, x):
-        x = self.fcn(x)
-        return self.out_layer(x['out'])
-
-def train_batch(batch, model, optimizer, loss):
-    inp = batch[0].float()
-    inp.requires_grad=True
-    preds = model(inp)
-    targets = batch[1].float()
-    targets.requires_grad=True
-    preds = torch.argmax(preds, dim=1).unsqueeze(dim=1).float()
-    optimizer.zero_grad()
-    batch_loss = loss(preds, targets.float())
-    batch_loss.backward()
-    optimizer.step()
-    return batch_loss.item()
-
-def validation_loss(model, data, loss):
-    running_loss = 0
-    for _ in range(3):
-        batch = data.one_batch(DatasetType.Valid)
-        pred = model(batch[0])
-        target = batch[1].float()
-        pred = torch.argmax(pred, dim=1).unsqueeze(dim=1).float()
-        valid_loss = loss(pred,target)
-        running_loss += valid_loss.item()
-    return running_loss/3
-
-def train_model(data, model, optimizer, loss, epochs):
-    print("Training starts")
-    for i in range(epochs):
-        print("Epoch {}".format(i))
-        running_train_loss = 0
-        for _ in range(12):
-            batch = data.one_batch()
-            train_loss = train_batch(batch, model, optimizer, loss)
-            running_train_loss += train_loss
-    avg_train_loss = running_train_loss/12
-    valid_loss = validation_loss(model, data, loss)
-    print("\tAverage Training Loss: {}\n\tAverage Validation Loss: {}".format(avg_train_loss, valid_loss))
+        x = self.seq1(x)
+        x = x.view(-1, 126*126*16)
+        x = self.seq2(x)
+        x = self.seq3(x)
+        x = self.dropout1(x)
+        x = self.seq4(x)
+        x = self.seq5(x)
+        x = self.seq6(x)
+        x = x.view(-1, 1, 256, 256)
+        x = self.seq7(x)
+        return x
 
 def get_model_from_file(pretrained=True, filename=os.path.join('models', 'autoboundModel.pth')):
     if pretrained:
