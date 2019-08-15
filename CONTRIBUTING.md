@@ -13,7 +13,7 @@ How to Submit a Pull Request
 Pull requests are highly appreciated! Please follow the simple guidelines below.
 
 1. Fork the repository to your personal GitHub account.
-1. Create a topic branch for every separate change you make. The branch should have a short but explanatory name, such as "AddedEmailColumn".
+1. Create a topic branch for every separate change you make. The branch should have a short but explanatory name, such as "NewModel".
 1. Apply your changes, committing at logical breaks. Make sure your changes are well-tested.
 1. Push your branch to your personal account and [create a pull request](https://help.github.com/articles/using-pull-requests/).
 1. Watch for comments or acceptance on your PR. The PR can be updated by just pushing to the original branch.
