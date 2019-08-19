@@ -1,5 +1,4 @@
 from torch import nn
-from torchvision import models
 import torch
 from fastai.basic_data import DatasetType
 import numpy as np
