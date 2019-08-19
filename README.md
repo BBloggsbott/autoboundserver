@@ -12,4 +12,6 @@ Save your the model you have built and copy them to a directory of your choice. 
 
 Server for [AutoBound](https://github.com/BBloggsbott/autobound). Read more about it in the wiki [here](https://wiki.openstreetmap.org/wiki/JOSM/Plugins/AutoBound).
 
+The docker image for this server can be found [here](https://cloud.docker.com/u/bbloggsbott/repository/docker/bbloggsbott/autoboundserver).
+
 If you are interested in contributing, please read the contributing guidelines [here](https://github.com/BBloggsbott/autoboundserver/blob/master/CONTRIBUTING.md).
