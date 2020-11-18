@@ -36,7 +36,7 @@ mistune==0.8.4
 murmurhash==1.0.2
 nbconvert==5.5.0
 nbformat==4.4.0
-notebook==6.0.0
+notebook==6.1.5
 numexpr==2.6.9
 numpy==1.16.4
 nvidia-ml-py3==7.352.0
